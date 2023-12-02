@@ -16,8 +16,8 @@ public class XorTest
 
         var network = NetworkBuilder
             .WithInputs(2)
-            .WithLayer(2, ActivationFunctions.ReLU)
-            .WithLayer(1, ActivationFunctions.Sigmoid)
+            .WithLayer(2, new ActivationFunctions.ReLUFunction())
+            .WithLayer(1, new ActivationFunctions.SigmoidFunction())
             .Build();
 
         var rand = new Random();

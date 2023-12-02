@@ -2,7 +2,7 @@
 using BNN;
 using BNN.Tests;
 
-//SingleNeuron.Run();
+// SingleNeuron.Run();
 XorTest.Run();
 
 // var network = NetworkBuilder

@@ -8,7 +8,7 @@ public class SingleNeuron
 
         var network = NetworkBuilder
             .WithInputs(3)
-            .WithLayer(1, ActivationFunctions.Tanh)
+            .WithLayer(1, new ActivationFunctions.TanhFunction())
             .Build();
         var trainingInput = new [] {new[] {0.0, 0.0, 1.0}, new[] {1.0, 1.0, 1.0}, new[] {1.0, 0.0, 1.0}, new[] {0.0, 1.0, 1.0}};
         var trainingExpected = new[] {0.0, 1.0, 1.0, 1.0};

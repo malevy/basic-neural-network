@@ -25,11 +25,6 @@ public class NetworkBuilder
         return this;
     }
 
-    public NetworkBuilder WithOutput(int neuronCount)
-    {
-        return this.WithLayer(neuronCount, ActivationFunctions.Linear);
-    }
-    
     public Network Build()
     {
         if (!_layersDesigns.Any()) throw new InvalidOperationException("no layers were specific");
