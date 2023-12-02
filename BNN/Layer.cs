@@ -4,16 +4,18 @@ namespace BNN;
 
 public class Layer
 {
+    private readonly IActivationFunction _activationFunction;
     private readonly Neuron[] _neurons;
     
-    public Layer(int inputCount, int neuronCount, IActivationFunction actFunc)
+    public Layer(int inputCount, int neuronCount, IActivationFunction activationFunction)
     {
+        _activationFunction = activationFunction;
         var weightLimit = WeightScale(inputCount, neuronCount);
         var rand = new Random();
 
         _neurons = Enumerable.Range(0, neuronCount)
             .Select(_ => WeightFactory(inputCount))
-            .Select(weights => new Neuron(weights, rand.NextDouble(), actFunc))
+            .Select(weights => new Neuron(weights, rand.NextDouble(), activationFunction))
             .ToArray();
         
         return;
@@ -31,7 +33,7 @@ public class Layer
         {
             outputs[i] = _neurons[i].Apply(inputs);
         }
-        return outputs;
+        return _activationFunction.Squash(outputs);
     }
 
     public String Dump()
@@ -41,6 +43,7 @@ public class Layer
         foreach (var neuron in _neurons)
         {
             sb.Append( neuron.Dump());
+            sb.Append(',');
         }
         sb.AppendLine("]}");
         return sb.ToString();
@@ -52,10 +55,13 @@ public class Layer
      */
     public double[] BackProp(double[] inputs, double[] errorWrtOutput, double learningRate)
     {
+
+        var errorWrtNet = _activationFunction.BackProp(errorWrtOutput);
+        
         var aggregateErrorPerInput = new double[inputs.Length];
         for (var i = 0; i < _neurons.Length; i++)
         {
-            var errorPerInput = _neurons[i].BackProp(inputs, errorWrtOutput[i], learningRate);
+            var errorPerInput = _neurons[i].BackProp(inputs, errorWrtNet[i], learningRate);
             
             for (var j = 0; j < inputs.Length; j++)
             {

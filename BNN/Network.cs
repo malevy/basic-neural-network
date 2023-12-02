@@ -30,6 +30,7 @@ public class Network
         foreach (var layer in _layers)
         {
             sb.Append(layer.Dump());
+            sb.Append(',');
         }
         sb.AppendLine("]}");
         return sb.ToString();

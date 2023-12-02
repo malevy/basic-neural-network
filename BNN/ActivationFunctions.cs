@@ -21,6 +21,7 @@ public static class ActivationFunctions
 
         public double[] Squash(double[] inputs)
         {
+            // save the inputs and outputs for training
             Inputs = new double[inputs.Length];
             inputs.CopyTo(Inputs,0);
             Outputs = this.SquashImpl(inputs);

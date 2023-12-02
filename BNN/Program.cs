@@ -2,8 +2,8 @@
 using BNN;
 using BNN.Tests;
 
-// SingleNeuron.Run();
-XorTest.Run();
+SingleNeuron.Run();
+// XorTest.Run();
 
 // var network = NetworkBuilder
 //     .WithInputs(2)
