@@ -16,18 +16,27 @@ public class XorTest
 
         var network = NetworkBuilder
             .WithInputs(2)
-            .WithLayer(2, new ActivationFunctions.ReLUFunction())
+            .WithLayer(2, new ActivationFunctions.ReLuFunction())
             .WithLayer(1, new ActivationFunctions.SigmoidFunction())
             .Build();
 
+        Console.WriteLine(network.Dump());
+        
         var rand = new Random();
         
         // train
-        for (int e = 0; e < 50000; e++)
+        for (int e = 0; e < 40000; e++)
         {
             var sample = rand.Random(trainInputs);
             var err = network.Train(new[] {sample[0], sample[1]}, new[] {sample[2]}, 0.15);
             if (e%100 == 0) Console.WriteLine($"error = {err}");
+
+            if (err < 0.01)
+            {
+                Console.WriteLine($"training stopped after {e}; error={err}");
+                break;
+            }
+
         }
         
         // test

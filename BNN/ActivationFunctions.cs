@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace BNN;
+﻿namespace BNN;
 
 public interface IActivationFunction
 {
@@ -55,7 +53,7 @@ public static class ActivationFunctions
         }
     }
 
-    public class ReLUFunction : ActivationFunctionBase
+    public class ReLuFunction : ActivationFunctionBase
     {
         public override double Squash(double net) => Math.Max(0, net);
         public override double PartialDee(double net, double outValue) => (net > 0) ? 1 : 0;
@@ -73,20 +71,20 @@ public static class ActivationFunctions
 
     public class SigmoidFunction : ActivationFunctionBase
     {
-        private Func<double, double> sigmoid = (double x) => 1.0 / (1.0 + Math.Exp(-x)); 
+        private readonly Func<double, double> _sigmoid = (x) => 1.0 / (1.0 + Math.Exp(-x)); 
         
         public override double Squash(double net) => 1.0 / (1.0 + Math.Exp(-net));
         public override double PartialDee(double net, double outValue) => Squash(net) * (1.0 - Squash(net));
         
         protected override double[] SquashImpl(double[] inputs)
         {
-            return inputs.Select(input => sigmoid(input)).ToArray();
+            return inputs.Select(input => _sigmoid(input)).ToArray();
         }
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
             return Inputs
-                .Select(input => sigmoid(input) * (1 - sigmoid(input)))
+                .Select(input => _sigmoid(input) * (1 - _sigmoid(input)))
                 .Select((d, n) => errorWrtOutput[n] * d)
                 .ToArray();
         }

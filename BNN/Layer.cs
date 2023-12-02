@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 
 namespace BNN;
 
@@ -12,14 +11,17 @@ public class Layer
         var weightLimit = WeightScale(inputCount, neuronCount);
         var rand = new Random();
 
-        Func<double[]> weightFactory = () =>
-            Enumerable.Range(0, inputCount).Select(_ => 0.1 * rand.NextDouble(-weightLimit, weightLimit))
-                .ToArray(); 
-        
         _neurons = Enumerable.Range(0, neuronCount)
-            .Select(_ => weightFactory())
+            .Select(_ => WeightFactory(inputCount))
             .Select(weights => new Neuron(weights, rand.NextDouble(), actFunc))
             .ToArray();
+        
+        return;
+
+        double[] WeightFactory(int cnt) =>
+            Enumerable.Range(0, cnt)
+                .Select(_ => 0.1 * rand.NextDouble(-weightLimit, weightLimit))
+                .ToArray();
     }
 
     public double[] Apply(double[] inputs)
@@ -69,7 +71,7 @@ public class Layer
      * Glorot & Bengio, AISTATS 2010
      * http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf
      */
-    public static double WeightScale(int inputCount, int outputCount)
+    private static double WeightScale(int inputCount, int outputCount)
     {
         return Math.Sqrt(6.0 / (inputCount + outputCount));
     }

@@ -4,7 +4,7 @@ public static class RandomExtensions
 {
     public static double NextDouble(this Random @this, double min, double max)
     {
-        return @this.NextDouble() * (max - min) + min;
+        return (@this.NextDouble() * (max - min)) + min;
     }
 
     /**
