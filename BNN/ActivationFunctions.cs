@@ -2,9 +2,6 @@
 
 public interface IActivationFunction
 {
-    double Squash(double net);
-    double PartialDee(double net, double outValue);
-
     double[] Squash(double[] inputs);
     double[] BackProp(double[] errorWrtOutput);
 } 
@@ -16,9 +13,6 @@ public static class ActivationFunctions
         protected double[] Inputs = Array.Empty<double>();
         protected double[] Outputs = Array.Empty<double>();
         
-        public abstract double Squash(double net);
-        public abstract double PartialDee(double net, double outValue);
-
         public double[] Squash(double[] inputs)
         {
             // save the inputs and outputs for training
@@ -34,9 +28,6 @@ public static class ActivationFunctions
 
     public class LinearFunction : ActivationFunctionBase
     {
-        public override double Squash(double net) => net;
-        public override double PartialDee(double net, double outValue) => 1;
-        
         protected override double[] SquashImpl(double[] inputs)
         {
             var outputs = new double[inputs.Length];
@@ -56,9 +47,6 @@ public static class ActivationFunctions
 
     public class ReLuFunction : ActivationFunctionBase
     {
-        public override double Squash(double net) => Math.Max(0, net);
-        public override double PartialDee(double net, double outValue) => (net > 0) ? 1 : 0;
-        
         protected override double[] SquashImpl(double[] inputs)
         {
             return inputs.Select(input => Math.Max(0.0, input)).ToArray();
@@ -73,9 +61,6 @@ public static class ActivationFunctions
     public class SigmoidFunction : ActivationFunctionBase
     {
         private readonly Func<double, double> _sigmoid = (x) => 1.0 / (1.0 + Math.Exp(-x)); 
-        
-        public override double Squash(double net) => 1.0 / (1.0 + Math.Exp(-net));
-        public override double PartialDee(double net, double outValue) => Squash(net) * (1.0 - Squash(net));
         
         protected override double[] SquashImpl(double[] inputs)
         {
@@ -94,9 +79,6 @@ public static class ActivationFunctions
 
     public class TanhFunction : ActivationFunctionBase
     {
-        public override double Squash(double net) => Math.Tanh(net);
-        public override double PartialDee(double net, double outValue) => 1.0 - Math.Pow( Math.Tanh(outValue), 2);
-
         protected override double[] SquashImpl(double[] inputs)
         {
             return inputs.Select(input => Math.Tanh(input)).ToArray();

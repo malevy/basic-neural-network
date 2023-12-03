@@ -9,10 +9,10 @@
  */
 public class NetworkBuilder
 {
-    private record LayerDesign(int neurons, IActivationFunction ActivationFunction);
+    private record LayerDesign(int Neurons, IActivationFunction ActivationFunction);
     
     private readonly int _inputs;
-    private IList<LayerDesign> _layersDesigns = new List<LayerDesign>();
+    private readonly IList<LayerDesign> _layersDesigns = new List<LayerDesign>();
 
     private NetworkBuilder(int inputs)
     {
@@ -33,10 +33,10 @@ public class NetworkBuilder
         var layers = new List<Layer>();
         foreach (var ld in _layersDesigns)
         {
-            layers.Add(new Layer(inputs, ld.neurons, ld.ActivationFunction));
+            layers.Add(new Layer(inputs, ld.Neurons, ld.ActivationFunction));
             
-            // the number neurons becomes the number of inputs for the next layer
-            inputs = ld.neurons;
+            // the number of neurons becomes the number of inputs for the next layer
+            inputs = ld.Neurons;
         }
 
         return new Network(layers.ToArray());
