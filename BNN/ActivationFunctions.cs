@@ -4,7 +4,7 @@ public interface IActivationFunction
 {
     double[] Squash(double[] inputs);
     double[] BackProp(double[] errorWrtOutput);
-} 
+}
 
 public static class ActivationFunctions
 {
@@ -12,12 +12,12 @@ public static class ActivationFunctions
     {
         protected double[] Inputs = Array.Empty<double>();
         protected double[] Outputs = Array.Empty<double>();
-        
+
         public double[] Squash(double[] inputs)
         {
             // save the inputs and outputs for training
             Inputs = new double[inputs.Length];
-            inputs.CopyTo(Inputs,0);
+            inputs.CopyTo(Inputs, 0);
             Outputs = this.SquashImpl(inputs);
             return Outputs;
         }
@@ -31,7 +31,7 @@ public static class ActivationFunctions
         protected override double[] SquashImpl(double[] inputs)
         {
             var outputs = new double[inputs.Length];
-            inputs.CopyTo(outputs,0);
+            inputs.CopyTo(outputs, 0);
             return outputs;
         }
 
@@ -40,7 +40,7 @@ public static class ActivationFunctions
             // the derivative of a constant is 1 so the output
             // becomes a copy of the supplied errors
             var pdOutputs = new double[Outputs.Length];
-            errorWrtOutput.CopyTo(pdOutputs,0);
+            errorWrtOutput.CopyTo(pdOutputs, 0);
             return pdOutputs;
         }
     }
@@ -60,8 +60,8 @@ public static class ActivationFunctions
 
     public class SigmoidFunction : ActivationFunctionBase
     {
-        private readonly Func<double, double> _sigmoid = (x) => 1.0 / (1.0 + Math.Exp(-x)); 
-        
+        private readonly Func<double, double> _sigmoid = (x) => 1.0 / (1.0 + Math.Exp(-x));
+
         protected override double[] SquashImpl(double[] inputs)
         {
             return inputs.Select(input => _sigmoid(input)).ToArray();
@@ -91,4 +91,28 @@ public static class ActivationFunctions
                 .ToArray();
         }
     }
+
+    public class SoftmaxFunction : ActivationFunctionBase
+    {
+        protected override double[] SquashImpl(double[] inputs)
+        {
+            // subtract the maximum input from all the inputs
+            // to prevent the exponential function from overflowing
+            var maxInputValue = inputs.Max();
+            var expValues = inputs
+                .Select(i => i - maxInputValue)
+                .Select(Math.Exp)
+                .ToArray();
+            var sum = expValues.Sum();
+
+            return expValues.Select(v => v / sum).ToArray();            
+        }
+
+        public override double[] BackProp(double[] errorWrtOutput)
+        {
+            // TODO - come back and add this in
+            return errorWrtOutput;
+        }
+    }
+
 }
