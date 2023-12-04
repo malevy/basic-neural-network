@@ -5,11 +5,10 @@ using BNN.Tests;
 // SingleNeuron.Run();
 // XorTest.Run();
 
-var rand = new Random();
-var nums = rand.Randn(50);
-foreach (var num in nums)
+var samples = SpiralTest.BuildSpiralData(50, 2);
+for (var n=0; n<samples.GetLength(0); n++)
 {
-    Console.Write(num+", ");
+    Console.WriteLine($"{n}: {samples[n,0]}, {samples[n,1]}, {samples[n,2]}");
 }
 
 // var network = NetworkBuilder
@@ -103,42 +102,3 @@ double[][] BuildSineData(int numberOfSamples)
     
 }
 
-/*
- * https://github.com/Sentdex/nnfs/blob/master/nnfs/datasets/spiral.py
- * https://cs231n.github.io/neural-networks-case-study/
- */
-double[,] BuildSpiralData(int numberOfSamples, int numberOfClasses)
-{
-    /*
-     * for any given sample n
-     * result[n,0] = X coord
-     * result[n,1] = Y coord
-     * result[n,2] = the class (ie dataset) the point belongs to 
-     */
-    var results = new double[numberOfSamples * numberOfClasses,3];
-
-    foreach (var class_number in Enumerable.Range(0,numberOfClasses))
-    {
-        for (var n = numberOfSamples * class_number; n < numberOfSamples * (class_number + 1); n++)
-        {
-            
-        }
-    }
-    
-    return results;
-}
-
-// return evenly spaced numbers between start and end
-double[] Linespace(double start, double end, int num)
-{
-    var delta = (end - start) / num;
-    var results = new double[num];
-    var value = start;
-    for (var i = 0; i < num; i++)
-    {
-        results[i] = value;
-        value += delta;
-    }
-
-    return results;
-}
