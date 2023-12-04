@@ -6,10 +6,17 @@ namespace BNN;
 public class Network
 {
     private readonly Layer[] _layers;
+    private Func<double[], double[], double> _aggregateErrorFunction;
+    private Func<double[], double[], double[]> _gradientErrorFunction;
     
-    public Network(Layer[] layers)
+    public Network(
+        Layer[] layers, 
+        Func<double[], double[], double> aggregateErrorFunction, 
+        Func<double[], double[], double[]> gradientErrorFunction)
     {
         _layers = layers;
+        _aggregateErrorFunction = aggregateErrorFunction;
+        _gradientErrorFunction = gradientErrorFunction;
     }
     
     public double[] Apply(double[] inputs)
@@ -35,8 +42,23 @@ public class Network
         sb.AppendLine("]}");
         return sb.ToString();
     }
-    
-    public double Train(double[] inputs, double[] targets, double learningRate)
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="inputs"></param>
+    /// <param name="targets"></param>
+    /// <param name="learningRate"></param>
+    /// <param name="aggregateErrorFunction">
+    /// A function that calculates the aggregate error.
+    /// (predicted[], target[]) => aggregate error
+    /// </param>
+    /// <param name="gradientErrorFunction">
+    /// A function that calculates the gradient errors.
+    /// (predicted[], target[]) => gradient[]
+    /// </param>
+    /// <returns></returns>
+    public double Train(double[] inputs, double[] targets, double learningRate) 
     {
         // the original inputs are at index 0;
         var inputsList = new List<double[]> {inputs};
@@ -56,14 +78,8 @@ public class Network
         Debug.Assert(predicted.Length == targets.Length);
         
         // calculate the error using the loss function
-        // TODO - the loss function should be supplied as a parameter
-        var averageError = predicted
-            .Select((p, i) => LossFunctions.AbsoluteError(targets[i], p))
-            .Sum();
-
-        var errorsWrtOutput = predicted
-            .Select((p, i) => LossFunctions.dSquaredError(targets[i], p))
-            .ToArray();
+        var aggregateError = _aggregateErrorFunction.Invoke(targets, predicted);
+        var errorsWrtOutput = _gradientErrorFunction.Invoke(targets, predicted); 
 
         // propagate the error backwards through the layers
         var errorsToPropagate = errorsWrtOutput;
@@ -73,6 +89,6 @@ public class Network
         }
 
         // return the average error prior to adjusting weights
-        return averageError;
+        return aggregateError;
     }
 }

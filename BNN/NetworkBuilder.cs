@@ -13,6 +13,9 @@ public class NetworkBuilder
     
     private readonly int _inputs;
     private readonly IList<LayerDesign> _layersDesigns = new List<LayerDesign>();
+    private Func<double[], double[], double> _aggregateErrorFunction;
+    private Func<double[], double[], double[]> _gradientErrorFunction;
+
 
     private NetworkBuilder(int inputs)
     {
@@ -39,11 +42,26 @@ public class NetworkBuilder
             inputs = ld.Neurons;
         }
 
-        return new Network(layers.ToArray());
+        return new Network(
+            layers.ToArray(), 
+            _aggregateErrorFunction, 
+            _gradientErrorFunction);
     }
 
     public static NetworkBuilder WithInputs(int inputs)
     {
         return new NetworkBuilder(inputs);
+    }
+
+    public NetworkBuilder WithAggregateLossFunction(Func<double[], double[], double> func)
+    {
+        _aggregateErrorFunction = func;
+        return this;
+    }
+
+    public NetworkBuilder WithGradientLossFunction(Func<double[], double[], double[]> func)
+    {
+        _gradientErrorFunction = func;
+        return this;
     }
 }

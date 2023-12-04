@@ -7,42 +7,44 @@ public class XorTest
         var trainInputs = new double[][]
         {
             // a, b, a^b
-            new[] {0.0, 0.0, 0.0},
-            new[] {0.0, 1.0, 1.0},
-            new[] {1.0, 0.0, 1.0},
-            new[] {1.0, 1.0, 0.0},
-
+            new[] { 0.0, 0.0, 0.0 },
+            new[] { 0.0, 1.0, 1.0 },
+            new[] { 1.0, 0.0, 1.0 },
+            new[] { 1.0, 1.0, 0.0 },
         };
 
         var network = NetworkBuilder
             .WithInputs(2)
+            .WithAggregateLossFunction(LossFunctions.MeanError(LossFunctions.AbsoluteError))
+            .WithGradientLossFunction(LossFunctions.SquaredErrorDerivative)
             .WithLayer(2, new ActivationFunctions.ReLuFunction())
             .WithLayer(1, new ActivationFunctions.SigmoidFunction())
             .Build();
 
         Console.WriteLine(network.Dump());
-        
+
         var rand = new Random();
-        
+
         // train
         for (int e = 0; e < 40000; e++)
         {
             var sample = rand.Random(trainInputs);
-            var err = network.Train(new[] {sample[0], sample[1]}, new[] {sample[2]}, 0.15);
-            if (e%100 == 0) Console.WriteLine($"error = {err}");
+            var err = network.Train(
+                new[] { sample[0], sample[1] },
+                new[] { sample[2] }, 0.15);
+            if (e % 100 == 0) Console.WriteLine($"error = {err}");
 
             if (err < 0.01)
             {
                 Console.WriteLine($"training stopped after {e}; error={err}");
                 break;
             }
-
         }
-        
+
         // test
         foreach (var input in trainInputs)
         {
-            var predicted = network.Apply(new[] {input[0], input[1]});
+            var predicted = network.Apply(new[] { input[0], input[1] });
             Console.WriteLine($"{input[0]} ^ {input[1]} = {predicted[0]}, expected: {input[2]}");
         }
     }
