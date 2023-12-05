@@ -3,8 +3,8 @@ using BNN;
 using BNN.Tests;
 
 // SingleNeuron.Run();
- XorTest.Run();
-
+ // XorTest.Run();
+VerticalTest.Run();
 
 // var network = NetworkBuilder
 //     .WithInputs(2)
@@ -55,30 +55,6 @@ using BNN.Tests;
 //     Console.WriteLine($"{testData[0]},{testData[1]},{predicted[0]}");
 // }
 // Console.WriteLine($"Avg error during testing: {totalError/sinData.Length}");
-
-string DisplayArray(double[] arr)
-{
-    return "[" + string.Join(",", arr) + "]";
-}
-
-
-double[][] BuildTrainingSet(int numberOfSamples)
-{
-    double[][] samples = new double[numberOfSamples][];
-
-    var rand = new Random();
-    
-    for (int i = 0; i < numberOfSamples; i++)
-    {
-        double a = rand.NextDouble();
-        double b = rand.NextDouble();
-        double y = Math.Pow(a, 2) + b;
-        double[] sample = new[] {a, b, y};
-        samples[i] = sample;
-    }
-
-    return samples;
-}
 
 double[][] BuildSineData(int numberOfSamples)
 {
