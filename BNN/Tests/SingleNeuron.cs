@@ -19,19 +19,19 @@ public class SingleNeuron
         var testExpected = 1.0;
 
         Console.WriteLine(network.Dump());
-        var avgErr=0.0;
+        var averageError=0.0;
         for (int e = 0; e < 5001; e++)
         {
             for(int s=0; s<trainingInput.Length;s++)
             {
                 var sample = trainingInput[s];
-                avgErr = network.Train(sample, 
+                averageError = network.Train(sample, 
                     toArray(trainingExpected[s]), 
                     0.1);
             }
-            if (e%100==0) Console.WriteLine($"average error for epoch {e}: {avgErr}");
+            if (e%100==0) Console.WriteLine($"average error for epoch {e}: {averageError}");
         }
-        Console.WriteLine($"final average error: {avgErr}");
+        Console.WriteLine($"final average error: {averageError}");
 
         Console.WriteLine(network.Dump());
 

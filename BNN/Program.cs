@@ -3,13 +3,8 @@ using BNN;
 using BNN.Tests;
 
 // SingleNeuron.Run();
-// XorTest.Run();
+ XorTest.Run();
 
-var samples = SpiralTest.BuildSpiralData(50, 2);
-for (var n=0; n<samples.GetLength(0); n++)
-{
-    Console.WriteLine($"{n}: {samples[n,0]}, {samples[n,1]}, {samples[n,2]}");
-}
 
 // var network = NetworkBuilder
 //     .WithInputs(2)

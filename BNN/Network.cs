@@ -9,10 +9,24 @@ public class Network
     private Func<double[], double[], double> _aggregateErrorFunction;
     private Func<double[], double[], double[]> _gradientErrorFunction;
     
+    /// <summary>
+    /// Instantiate the Neural Network
+    /// </summary>
+    /// <param name="layers">An array of Layer object, each of which describe one layer
+    /// in the network. The layers will be created in the other they appear in the given array
+    /// </param>
+    /// <param name="aggregateErrorFunction">
+    /// A function that calculates the aggregate error.
+    /// (target[],predicted[]) => aggregate error
+    /// </param>
+    /// <param name="gradientErrorFunction">
+    /// A function that calculates the gradient errors.
+    /// (target[],predicted[]) => gradient[]
+    /// </param>
     public Network(
         Layer[] layers, 
         Func<double[], double[], double> aggregateErrorFunction, 
-        Func<double[], double[], double[]> gradientErrorFunction)
+        Func<double[], double[], double[]> gradientErrorFunction)  
     {
         _layers = layers;
         _aggregateErrorFunction = aggregateErrorFunction;
@@ -49,14 +63,6 @@ public class Network
     /// <param name="inputs"></param>
     /// <param name="targets"></param>
     /// <param name="learningRate"></param>
-    /// <param name="aggregateErrorFunction">
-    /// A function that calculates the aggregate error.
-    /// (predicted[], target[]) => aggregate error
-    /// </param>
-    /// <param name="gradientErrorFunction">
-    /// A function that calculates the gradient errors.
-    /// (predicted[], target[]) => gradient[]
-    /// </param>
     /// <returns></returns>
     public double Train(double[] inputs, double[] targets, double learningRate) 
     {

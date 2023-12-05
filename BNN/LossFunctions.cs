@@ -13,9 +13,9 @@ public static class LossFunctions
     /// <returns>the error</returns>
     public static Func<double[], double[], double> MeanError(Func<double, double, double> errorFunc)
     {
-        return (target, predicted) => predicted
-            .Zip(target)
-            .Select(t => errorFunc(t.Second, t.First))
+        return (target, predicted) => target
+            .Zip(predicted)
+            .Select(t => errorFunc(t.First, t.Second))
             .Average();
     }
 
@@ -27,11 +27,11 @@ public static class LossFunctions
     /// and returns the error
     /// </param>
     /// <returns>the error</returns>
-    public static Func<IEnumerable<double>, IEnumerable<double>, double> TotalError(Func<double, double, double> errorFunc)
+    public static Func<double[], double[], double> TotalError(Func<double, double, double> errorFunc)
     {
-        return (target, predicted) => predicted
-            .Zip(target)
-            .Select(t => errorFunc(t.Second, t.First))
+        return (target, predicted) => target
+            .Zip(predicted)
+            .Select(t => errorFunc(t.First, t.Second))
             .Sum();
     }
     
@@ -46,19 +46,17 @@ public static class LossFunctions
         return target - predicted;
     }
     
-    // The total error is the sum of the SquaredError for each output
-    // note: the division by 2 when computing the error simplifies 
-    // calculating the derivative.
     public static double SquaredError(double target, double predicted)
     {
-        return Math.Pow(target - predicted, 2) / 2;
+        return Math.Pow(target - predicted, 2);
     }
 
     public static double[] SquaredErrorDerivative(double[] target, double[] predicted)
     {
         // return -1.0 * (target - predicted);
-        return target.Zip(predicted)
-            .Select(x => 1.0 * (x.First - x.Second))
+        return target
+            .Zip(predicted)
+            .Select(x => -2.0 * (x.First - x.Second))
             .ToArray();
     }
     

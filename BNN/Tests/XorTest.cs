@@ -15,7 +15,7 @@ public class XorTest
 
         var network = NetworkBuilder
             .WithInputs(2)
-            .WithAggregateLossFunction(LossFunctions.MeanError(LossFunctions.AbsoluteError))
+            .WithAggregateLossFunction(LossFunctions.MeanError(LossFunctions.SquaredError))
             .WithGradientLossFunction(LossFunctions.SquaredErrorDerivative)
             .WithLayer(2, new ActivationFunctions.ReLuFunction())
             .WithLayer(1, new ActivationFunctions.SigmoidFunction())
@@ -26,15 +26,20 @@ public class XorTest
         var rand = new Random();
 
         // train
-        for (int e = 0; e < 40000; e++)
+        for (int e = 0; e < 10000; e++)
         {
-            var sample = rand.Random(trainInputs);
-            var err = network.Train(
-                new[] { sample[0], sample[1] },
-                new[] { sample[2] }, 0.15);
-            if (e % 100 == 0) Console.WriteLine($"error = {err}");
+            // var sample = rand.Random(trainInputs);
 
-            if (err < 0.01)
+            double err=0.0;
+            foreach (var sample in trainInputs)
+            {
+                err = network.Train(
+                    new[] { sample[0], sample[1] },
+                    new[] { sample[2] }, 0.15);
+                if (e % 100 == 0) Console.WriteLine($"error = {err}");
+            }
+
+            if (err < 0.0001)
             {
                 Console.WriteLine($"training stopped after {e}; error={err}");
                 break;
