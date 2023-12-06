@@ -110,8 +110,6 @@ public static class ActivationFunctions
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-
-            // the Jacobian matrix
             var derivatives = new double[Outputs.Length];
 
             for (var i = 0; i < Outputs.Length; i++) // row

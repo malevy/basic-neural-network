@@ -60,7 +60,9 @@ public static class LossFunctions
             .ToArray();
     }
     
-    // frequently used with classification problems
+    // assume we're working on a multi-label classification problem
+    // and the target is a one-hot vector, such that a sample belongs to one
+    // and only one class.
     public static double CategoricalCrossEntropy(double[] target, double[] predicted)
     {
         double NEAR_ZERO = Math.Pow(10.0, -7);
@@ -71,7 +73,7 @@ public static class LossFunctions
         var loss = -1.0 * target
             .Zip(predicted.Select(p => Math.Clamp(p, NEAR_ZERO, 1-NEAR_ZERO)))
             .Select(x => Math.Log(x.Second) * x.First)
-            .Sum();
+            .Average();
 
         return loss;
     }

@@ -8,31 +8,37 @@ public class VerticalTest
         var trainingInputs = BuildVerticalDataSet(50, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(3, new ActivationFunctions.ReLuFunction())
+            .WithLayer(64, new ActivationFunctions.ReLuFunction())
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
+        var learningRate = 1.0;
+        var learningRateDecay = 0.0125;
+        var iteration = 0;
+        
         // train
-        for (var e = 0; e < 4000; e++)
+        for (var e = 0; e < 10000; e++)
         {
             Shuffle(trainingInputs);
 
             var err = 0.0;
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
-                var expected = new double[3];
+                // decay the learning rate a little bit with each epoch
+                learningRate *= (1.0 / (1.0 + (learningRateDecay * iteration)));
+
+                var expected = new[] { 0.0, 0.0, 0.0 };
                 expected[(int)trainingInputs[n, 2]] = 1.0;
-                err = network.Train(
-                    new[]
-                    {
-                        trainingInputs[n, 0],
-                        trainingInputs[n, 1]
-                    },
-                    expected, 0.25);
-                if (e % 100 == 0) Console.WriteLine($"error = {err}");
+                var inputs = new[]
+                {
+                    trainingInputs[n, 0],
+                    trainingInputs[n, 1]
+                };
+                err = network.Train(inputs, expected, learningRate);
             }
+            if (e % 100 == 0) Console.WriteLine($"epoch:{e} error:{err}");
 
             if (err < 0.0001)
             {
@@ -50,7 +56,7 @@ public class VerticalTest
                 trainingInputs[s, 0],
                 trainingInputs[s, 1]
             };
-            var expected = new double[3];
+            var expected = new[] { 0.0, 0.0, 0.0 };
             expected[(int)trainingInputs[s, 2]] = 1.0;
 
             var predicted = network.Apply(inputs);
@@ -62,6 +68,7 @@ public class VerticalTest
     {
         return "[" + string.Join(",", arr) + "]";
     }
+
     static void Shuffle(double[,] data)
     {
         var rand = new Random();
