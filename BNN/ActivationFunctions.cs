@@ -103,15 +103,37 @@ public static class ActivationFunctions
                 .Select(i => i - maxInputValue)
                 .Select(Math.Exp)
                 .ToArray();
+            
             var sum = expValues.Sum();
-
             return expValues.Select(v => v / sum).ToArray();            
         }
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-            // TODO - come back and add this in
-            return errorWrtOutput;
+
+            // the Jacobian matrix
+            var derivatives = new double[Outputs.Length];
+
+            for (var i = 0; i < Outputs.Length; i++) // row
+            {
+                var result = 0.0;
+                for (var j = 0; j < Outputs.Length; j++) // column
+                {
+                    result +=
+                        (i == j)
+                            ? Outputs[i] * (1 - Outputs[i])
+                            : -1.0 * Outputs[i] * Outputs[j];
+                }
+
+                derivatives[i] = result;
+            }
+
+            var errorWrtNet = derivatives
+                .Zip(errorWrtOutput)
+                .Select(x => x.First * x.Second)
+                .ToArray();
+            
+            return errorWrtNet;
         }
     }
 

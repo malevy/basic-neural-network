@@ -83,7 +83,7 @@ public static class LossFunctions
         return predicted
             .Select(p => Math.Clamp(p, NEAR_ZERO, 1 - NEAR_ZERO))
             .Zip(target)
-            .Select(x => (-1 * x.Second) / x.First)
+            .Select(x => (-1.0 * x.Second) / x.First)
             .ToArray();
     }
 }

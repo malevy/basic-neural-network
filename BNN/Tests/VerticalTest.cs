@@ -30,7 +30,7 @@ public class VerticalTest
                         trainingInputs[n, 0],
                         trainingInputs[n, 1]
                     },
-                    expected, 0.15);
+                    expected, 0.25);
                 if (e % 100 == 0) Console.WriteLine($"error = {err}");
             }
 
