@@ -6,13 +6,11 @@ public class Neuron
 {
     private double[] _weights;
     private double _bias;
-    private readonly IActivationFunction _activationFunc;
 
-    public Neuron(double[] weights, double bias, IActivationFunction activationFunction)
+    public Neuron(double[] weights, double bias)
     {
         _weights = weights;
         _bias = bias;
-        _activationFunc = activationFunction;
     }
     
     public double Apply(double[] inputs)

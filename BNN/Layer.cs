@@ -15,7 +15,7 @@ public class Layer
 
         _neurons = Enumerable.Range(0, neuronCount)
             .Select(_ => WeightFactory(inputCount))
-            .Select(weights => new Neuron(weights, rand.NextDouble(), activationFunction))
+            .Select(weights => new Neuron(weights, rand.NextDouble()))
             .ToArray();
         
         return;
