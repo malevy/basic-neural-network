@@ -5,7 +5,7 @@ public class VerticalTest
     public static void Run()
     {
         var rand = new Random();
-        var trainingInputs = BuildVerticalDataSet(50, 3);
+        var trainingInputs = BuildVerticalDataSet(100, 3);
 
         var network = NetworkBuilder.WithInputs(2)
             .WithLayer(64, new ActivationFunctions.ReLuFunction())
@@ -15,7 +15,7 @@ public class VerticalTest
             .Build();
 
         var learningRate = 1.0;
-        var learningRateDecay = 0.0125;
+        var learningRateDecay = 0.001;
         var iteration = 0;
         
         // train

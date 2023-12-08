@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BNN", "BNN\BNN.csproj", "{621A6507-F36F-418A-9CA0-9C1061AF735B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BNN.Tests", "BNN.Tests\BNN.Tests.csproj", "{023C320D-FFCF-4041-89BB-AFEDE08A6B92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{621A6507-F36F-418A-9CA0-9C1061AF735B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{621A6507-F36F-418A-9CA0-9C1061AF735B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{621A6507-F36F-418A-9CA0-9C1061AF735B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{023C320D-FFCF-4041-89BB-AFEDE08A6B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{023C320D-FFCF-4041-89BB-AFEDE08A6B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{023C320D-FFCF-4041-89BB-AFEDE08A6B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{023C320D-FFCF-4041-89BB-AFEDE08A6B92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
