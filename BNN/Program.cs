@@ -1,10 +1,12 @@
 ﻿
 using BNN;
-using BNN.Tests;
+using Plotly.NET;
 
 // SingleNeuron.Run();
  // XorTest.Run();
-VerticalTest.Run();
+//VerticalTest.Run();
+
+
 
 // var network = NetworkBuilder
 //     .WithInputs(2)

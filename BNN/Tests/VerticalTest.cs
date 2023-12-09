@@ -5,29 +5,30 @@ public class VerticalTest
     public static void Run()
     {
         var rand = new Random();
-        var trainingInputs = BuildVerticalDataSet(100, 3);
+        var trainingInputs = DataGenerators.BuildVerticalDataSet(100, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(64, new ActivationFunctions.ReLuFunction())
+            .WithLayer(8, new ActivationFunctions.SigmoidFunction())
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        var learningRate = 1.0;
-        var learningRateDecay = 0.001;
+        double learningRate = 1.0;
+        const double learningRateDecay = 0.0001;
         var iteration = 0;
         
         // train
+        var err = 0.0;
         for (var e = 0; e < 10000; e++)
         {
             Shuffle(trainingInputs);
 
-            var err = 0.0;
+            double applicableLearningRate=0;
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
-                // decay the learning rate a little bit with each epoch
-                learningRate *= (1.0 / (1.0 + (learningRateDecay * iteration)));
+                // decay the learning rate a little bit with each iteration
+                applicableLearningRate = learningRate * (1.0 / (1.0 + (learningRateDecay * iteration)));
 
                 var expected = new[] { 0.0, 0.0, 0.0 };
                 expected[(int)trainingInputs[n, 2]] = 1.0;
@@ -36,9 +37,10 @@ public class VerticalTest
                     trainingInputs[n, 0],
                     trainingInputs[n, 1]
                 };
-                err = network.Train(inputs, expected, learningRate);
+                err = network.Train(inputs, expected, applicableLearningRate);
+                iteration++;
             }
-            if (e % 100 == 0) Console.WriteLine($"epoch:{e} error:{err}");
+            if (e % 100 == 0) Console.WriteLine($"epoch:{e} error:{err} lr:{applicableLearningRate}");
 
             if (err < 0.0001)
             {
@@ -46,6 +48,7 @@ public class VerticalTest
                 break;
             }
         }
+        Console.WriteLine($"last error:{err}");
 
         // test
         for (var i = 0; i < 10; i++)
@@ -85,31 +88,4 @@ public class VerticalTest
         }
     }
 
-    /*
-     * based on https://github.com/Sentdex/nnfs/blob/master/nnfs/datasets/vertical.py
-     * for any given sample n
-     * result[n,0] = X coord
-     * result[n,1] = Y coord
-     * result[n,2] = the class (ie dataset) the point belongs to
-     */
-    static double[,] BuildVerticalDataSet(int sampleCount, int classCount)
-    {
-        var rand = new Random();
-        double[,] results = new double[sampleCount * classCount, 3];
-
-        for (var c = 0; c < classCount; c++)
-        {
-            var offset = c * sampleCount;
-            for (var n = 0; n < sampleCount; n++)
-            {
-                var X = rand.Randn(sampleCount).Select(v => (v * 0.1) + (c / 3.0)).ToArray();
-                var Y = rand.Randn(sampleCount).Select(v => (v * 0.1) + 0.5).ToArray();
-                results[offset + n, 0] = X[n];
-                results[offset + n, 1] = Y[n];
-                results[offset + n, 2] = c;
-            }
-        }
-
-        return results;
-    }
 }
