@@ -39,7 +39,7 @@ public class Layer
     public String Dump()
     {
         var sb = new StringBuilder();
-        sb.Append("{neurons:[");
+        sb.Append("{\"neurons\":[");
         foreach (var neuron in _neurons)
         {
             sb.Append( neuron.Dump());

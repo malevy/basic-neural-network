@@ -4,31 +4,29 @@ public class VerticalTest
 {
     public static void Run()
     {
+        var sampleCount = 400;
         var rand = new Random();
-        var trainingInputs = DataGenerators.BuildVerticalDataSet(100, 3);
+        var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(8, new ActivationFunctions.SigmoidFunction())
+            .WithLayer(32, new ActivationFunctions.LeakyReLuFunction(0.01))
+            .WithLayer(16, new ActivationFunctions.LeakyReLuFunction(0.01))
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        double learningRate = 1.0;
-        const double learningRateDecay = 0.0001;
-        var iteration = 0;
+        var learningRate = new LearningRate(1.0, 0.01);
+        List<double> errors = new();
         
         // train
         var err = 0.0;
-        for (var e = 0; e < 10000; e++)
+        for (var e = 0; e < 4001; e++)
         {
             Shuffle(trainingInputs);
 
-            double applicableLearningRate=0;
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
-                // decay the learning rate a little bit with each iteration
-                applicableLearningRate = learningRate * (1.0 / (1.0 + (learningRateDecay * iteration)));
 
                 var expected = new[] { 0.0, 0.0, 0.0 };
                 expected[(int)trainingInputs[n, 2]] = 1.0;
@@ -37,34 +35,48 @@ public class VerticalTest
                     trainingInputs[n, 0],
                     trainingInputs[n, 1]
                 };
-                err = network.Train(inputs, expected, applicableLearningRate);
-                iteration++;
+                err = network.Train(inputs, expected, learningRate.Value);
             }
-            if (e % 100 == 0) Console.WriteLine($"epoch:{e} error:{err} lr:{applicableLearningRate}");
 
-            if (err < 0.0001)
+            if (e % 100 == 0)
+            {
+                Console.WriteLine($"epoch:{e} error:{err} lr:{learningRate.Value}");
+                errors.Add(err);
+            }
+            if (err < 0.001)
             {
                 Console.WriteLine($"training stopped after {e}; error={err}");
                 break;
             }
+            learningRate.Decay();
+
         }
         Console.WriteLine($"last error:{err}");
+        errors.Add(err);
+        ErrorGraph.Graph(errors);
 
         // test
-        for (var i = 0; i < 10; i++)
+        var testSamples = 10;
+        var testingInputs = DataGenerators.BuildVerticalDataSet( testSamples, 3);
+
+        Shuffle(testingInputs);
+        for (var i = 0; i < testSamples; i++)
         {
-            var s = rand.Next(50);
+            var s = rand.Next(10);
             var inputs = new[]
             {
-                trainingInputs[s, 0],
-                trainingInputs[s, 1]
+                testingInputs[s, 0],
+                testingInputs[s, 1]
             };
             var expected = new[] { 0.0, 0.0, 0.0 };
-            expected[(int)trainingInputs[s, 2]] = 1.0;
+            expected[(int)testingInputs[s, 2]] = 1.0;
 
             var predicted = network.Apply(inputs);
-            Console.WriteLine($"expected {DisplayArray(expected)}, predicted {DisplayArray(predicted)}");
+            var loss = LossFunctions.CategoricalCrossEntropy(expected, predicted);
+            Console.WriteLine($"test: {DisplayArray(inputs)}\t predicted {DisplayArray(predicted)}\t expected {DisplayArray(expected)}\t loss:{loss}");
         }
+        
+        
     }
 
     static string DisplayArray(double[] arr)

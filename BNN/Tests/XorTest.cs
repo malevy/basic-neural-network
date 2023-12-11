@@ -24,9 +24,10 @@ public class XorTest
         Console.WriteLine(network.Dump());
 
         var rand = new Random();
+        bool stopTraining = false;
 
         // train
-        for (int e = 0; e < 10000; e++)
+        for (int e = 0; e < 4000 && !stopTraining; e++)
         {
             // var sample = rand.Random(trainInputs);
 
@@ -37,13 +38,15 @@ public class XorTest
                     new[] { sample[0], sample[1] },
                     new[] { sample[2] }, 0.15);
                 if (e % 100 == 0) Console.WriteLine($"error = {err}");
+                if (err < 0.0001)
+                {
+                    Console.WriteLine($"training stopped after {e}; error={err}");
+                    stopTraining = true;
+                    break;
+                }
+
             }
 
-            if (err < 0.0001)
-            {
-                Console.WriteLine($"training stopped after {e}; error={err}");
-                break;
-            }
         }
 
         // test

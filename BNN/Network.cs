@@ -47,7 +47,7 @@ public class Network
     public string Dump()
     {
         var sb = new StringBuilder();
-        sb.Append("{layers:[");
+        sb.Append("{\"layers\":[");
         foreach (var layer in _layers)
         {
             sb.Append(layer.Dump());

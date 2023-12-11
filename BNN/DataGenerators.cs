@@ -1,4 +1,6 @@
 ﻿namespace BNN;
+using Plotly.NET;
+
 
 public static class DataGenerators
 {

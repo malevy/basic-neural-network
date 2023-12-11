@@ -47,6 +47,31 @@ public static class ActivationFunctions
 
     public class ReLuFunction : ActivationFunctionBase
     {
+        
+        protected override double[] SquashImpl(double[] inputs)
+        {
+            return inputs.Select(input => Math.Max(0.0, input)).ToArray();
+        }
+
+        public override double[] BackProp(double[] errorWrtOutput)
+        {
+            return Inputs.Select((input, n) => errorWrtOutput[n] * ((input > 0) ? 1 : 0)).ToArray();
+        }
+    }
+
+    public class LeakyReLuFunction : ActivationFunctionBase
+    {
+        private readonly double _a;
+
+        // Initializes a new instance of the LeakyReLuFunction class.
+        //
+        // Parameters:
+        //   a: The slope parameter for the Leaky ReLU function.       
+        public LeakyReLuFunction(double a)
+        {
+            _a = a;
+        }
+
         protected override double[] SquashImpl(double[] inputs)
         {
             return inputs.Select(input => Math.Max(0.0, input)).ToArray();
