@@ -65,14 +65,13 @@ public static class LossFunctions
     // and only one class.
     public static double CategoricalCrossEntropy(double[] target, double[] predicted)
     {
-        double NEAR_ZERO = Math.Pow(10.0, -7);
+        double NEAR_ZERO = Math.Pow(10.0, -10);
         
         if (predicted.Length != target.Length) throw new ArgumentException("lengths do not match");
 
-        // clamp the predicted value to prevent divide-by-zero problems
         var loss = -1.0 * target
-            .Zip(predicted.Select(p => Math.Clamp(p, NEAR_ZERO, 1-NEAR_ZERO)))
-            .Select(x => Math.Log(x.Second) * x.First)
+            .Zip(predicted)
+            .Select(x => Math.Log(x.Second+NEAR_ZERO) * x.First)
             .Sum();
 
         return loss;
@@ -80,12 +79,11 @@ public static class LossFunctions
 
     public static double[] CategoricalCrossEntropyDerivative(double[] target, double[] predicted )
     {
-        double NEAR_ZERO = Math.Pow(10, -7);
+        double NEAR_ZERO = Math.Pow(10, -10);
 
         return predicted
-            .Select(p => Math.Clamp(p, NEAR_ZERO, 1 - NEAR_ZERO))
             .Zip(target)
-            .Select(x => (-1.0 * x.Second) / x.First)
+            .Select(x => (-1.0 * x.Second) / (x.First+NEAR_ZERO))
             .ToArray();
     }
 }

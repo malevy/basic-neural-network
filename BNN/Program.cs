@@ -6,7 +6,11 @@ using Plotly.NET;
  // XorTest.Run();
 //VerticalTest.Run();
 
-
+// var x = new[] { 1.0, 2.0, 3.0 };
+// var y = new[] { 4.0, 5.0, 6.0 };
+// var z = String.Join(',', x.Zip(y)
+//     .Select(a => a.First * a.Second));
+// Console.WriteLine(z);
 
 // var network = NetworkBuilder
 //     .WithInputs(2)

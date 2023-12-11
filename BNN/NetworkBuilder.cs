@@ -22,7 +22,7 @@ public class NetworkBuilder
         _inputs = inputs;
     }
 
-    public NetworkBuilder WithLayer(int neuronCount, IActivationFunction activationFunction)
+    public NetworkBuilder WithLayer(int neuronCount, IActivationFunction activationFunction, double momentum = 0.0)
     {
         _layersDesigns.Add(new LayerDesign(neuronCount, activationFunction));
         return this;

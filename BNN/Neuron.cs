@@ -6,20 +6,39 @@ public class Neuron
 {
     private double[] _weights;
     private double _bias;
-    private readonly double _momentum = 0.9;
+    private readonly double _momentum;
     private double[] _perWeightMomentums;
     private double _biasMomentum = 0.0;
 
-    public Neuron(double[] weights, double bias)
+    public Neuron(double[] weights, double bias, double momentum=0.0)
     {
         _weights = weights;
         _bias = bias;
+        _momentum = momentum;
         _perWeightMomentums = new double[_weights.Length];
+    }
+    
+    public double[] Weights
+    {
+        get
+        {
+            return _weights;
+        }
+    }
+    
+    public double Bias
+    {
+        get
+        {
+            return _bias;
+        }
     }
     
     public double Apply(double[] inputs)
     {
-        return inputs.Select((x, i) => x * _weights[i]).Sum() + _bias;
+        return inputs
+            .Zip(_weights)
+            .Select(x => x.First * x.Second).Sum() + _bias;
     }
 
     public string Dump()

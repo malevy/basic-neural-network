@@ -7,23 +7,23 @@ public class Layer
     private readonly IActivationFunction _activationFunction;
     private readonly Neuron[] _neurons;
     
-    public Layer(int inputCount, int neuronCount, IActivationFunction activationFunction)
+    public Layer(int inputCount, int neuronCount, IActivationFunction activationFunction, double momentum = 0.0)
     {
         _activationFunction = activationFunction;
         var weightLimit = WeightScale(inputCount, neuronCount);
-        var rand = new Random();
 
         _neurons = Enumerable.Range(0, neuronCount)
-            .Select(_ => WeightFactory(inputCount))
-            .Select(weights => new Neuron(weights, rand.NextDouble()))
+            .Select(_ => WeightFactory(inputCount, weightLimit))
+            .Select(weights => new Neuron(weights, 0.0, momentum))
             .ToArray();
-        
-        return;
+    }
 
-        double[] WeightFactory(int cnt) =>
-            Enumerable.Range(0, cnt)
-                .Select(_ => 0.1 * rand.NextDouble(-weightLimit, weightLimit))
-                .ToArray();
+    private double[] WeightFactory(int cnt,  double weightLimit)
+    {
+        var rand = new Random();
+        return Enumerable.Range(0, cnt)
+            .Select(_ => 0.1 * rand.NextDouble(-weightLimit, weightLimit))
+            .ToArray();
     }
 
     public double[] Apply(double[] inputs)

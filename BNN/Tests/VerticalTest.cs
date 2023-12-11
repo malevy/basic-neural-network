@@ -4,30 +4,29 @@ public class VerticalTest
 {
     public static void Run()
     {
-        var sampleCount = 400;
+        var sampleCount = 200;
         var rand = new Random();
         var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(32, new ActivationFunctions.LeakyReLuFunction(0.01))
-            .WithLayer(16, new ActivationFunctions.LeakyReLuFunction(0.01))
+            .WithLayer(12, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
+            .WithLayer(12, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        var learningRate = new LearningRate(1.0, 0.01);
+        var learningRate = new LearningRate(3e-4, 0.00001);
         List<double> errors = new();
         
         // train
         var err = 0.0;
-        for (var e = 0; e < 4001; e++)
+        for (var e = 0; e < 10001; e++)
         {
             Shuffle(trainingInputs);
 
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
-
                 var expected = new[] { 0.0, 0.0, 0.0 };
                 expected[(int)trainingInputs[n, 2]] = 1.0;
                 var inputs = new[]
