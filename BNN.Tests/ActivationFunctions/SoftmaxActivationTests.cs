@@ -7,13 +7,24 @@ public class SoftmaxActivationTests
     [Test]
     public void SquashHappyPath()
     {
+        var actFunc = new BNN.ActivationFunctions.SoftmaxFunction();
+
         var inputs = new[] { 4.8, 1.21, 2.385 };
         var expected = new[] { 0.8952826639573506, 0.024708306782070668, 0.08000902926057876 };
-
-        var actFunc = new BNN.ActivationFunctions.SoftmaxFunction();
         var actual = actFunc.Squash(inputs);
-        
         Assert.That(actual, Is.EqualTo(expected).Within(0.001));
+
+        inputs = new[] { 2.0, 1.0, 0.1 };
+        expected = new[]{0.6590,0.2424,0.0986};
+        actual = actFunc.Squash(inputs);
+        Assert.That(actual, Is.EqualTo(expected).Within(0.001));
+        
+        inputs = new[] { 0.2, 1.9, 3.0 };
+        expected = new[]{0.0436, 0.2388, 0.7175};
+        actual = actFunc.Squash(inputs);
+        Assert.That(actual, Is.EqualTo(expected).Within(0.001));
+        
+
     }
 
     [Test]

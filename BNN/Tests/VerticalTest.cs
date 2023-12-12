@@ -4,13 +4,12 @@ public class VerticalTest
 {
     public static void Run()
     {
-        var sampleCount = 200;
+        var sampleCount = 100;
         var rand = new Random();
         var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(12, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
-            .WithLayer(12, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
+            .WithLayer(100, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
