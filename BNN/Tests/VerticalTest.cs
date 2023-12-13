@@ -9,13 +9,14 @@ public class VerticalTest
         var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(100, new ActivationFunctions.LeakyReLuFunction(0.01), 0.5)
+            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.01), 0.9)
+            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.01), 0.9)
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        var learningRate = new LearningRate(3e-4, 0.00001);
+        var learningRate = new LearningRate(1.1);
         List<double> errors = new();
         
         // train
@@ -41,11 +42,11 @@ public class VerticalTest
                 Console.WriteLine($"epoch:{e} error:{err} lr:{learningRate.Value}");
                 errors.Add(err);
             }
-            if (err < 0.001)
-            {
-                Console.WriteLine($"training stopped after {e}; error={err}");
-                break;
-            }
+            // if (err < 0.001)
+            // {
+            //     Console.WriteLine($"training stopped after {e}; error={err}");
+            //     break;
+            // }
             learningRate.Decay();
 
         }

@@ -1,4 +1,6 @@
-﻿namespace BNN;
+﻿using System.Diagnostics;
+
+namespace BNN;
 
 public interface IActivationFunction
 {
@@ -135,6 +137,10 @@ public static class ActivationFunctions
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
+            
+            Debug.Assert(errorWrtOutput.Length == Outputs.Length, 
+                $"the length of the errors array ({errorWrtOutput.Length}) did not match the length of the output array ({Outputs.Length})");
+            
             var derivatives = new double[Outputs.Length];
 
             for (var i = 0; i < Outputs.Length; i++) // row
@@ -142,21 +148,21 @@ public static class ActivationFunctions
                 var result = 0.0;
                 for (var j = 0; j < Outputs.Length; j++) // column
                 {
-                    result +=
+                    // partial derivative of the output at i,j
+                    var pdij =
                         (i == j)
                             ? Outputs[i] * (1 - Outputs[i])
                             : -1.0 * Outputs[i] * Outputs[j];
+                    
+                    result += pdij * errorWrtOutput[j];
                 }
 
                 derivatives[i] = result;
             }
 
-            var errorWrtNet = derivatives
-                .Zip(errorWrtOutput)
-                .Select(x => x.First * x.Second)
-                .ToArray();
+ 
             
-            return errorWrtNet;
+            return derivatives;
         }
     }
 
