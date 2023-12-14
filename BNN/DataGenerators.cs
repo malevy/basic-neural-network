@@ -64,4 +64,27 @@ var charts = new[]
 };
 Chart.Combine(charts).Show();
 */
+
+    /*
+     * for any given sample n
+     * result[n,0] = X coord
+     * result[n,1] = Y coord
+     */
+    public static double[,] BuildSineData(int numberOfSamples)
+    {
+        double[,] samples = new double[numberOfSamples,2];
+
+        var rand = new Random();
+        var x = 0.0;
+        var inc = 1.0 / numberOfSamples;
+        for (int i = 0; i < numberOfSamples; i++)
+        {
+            samples[i,0] = x; // x
+            samples[i,1] = Math.Sin(2 * Math.PI * x); // y
+            x += inc;
+        }
+
+        return samples;
+    }
+
 }

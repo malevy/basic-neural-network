@@ -1,4 +1,6 @@
-﻿namespace BNN;
+﻿using Plotly.NET.TraceObjects;
+
+namespace BNN;
 
 public static class RandomExtensions
 {
@@ -23,10 +25,8 @@ public static class RandomExtensions
      * this method simulates Numpy's "random.randn" function
      * with one dimension
      */
-    public static double[] Randn(this Random @this, int num)
+    public static double[] Randn(this Random @this, int num, double mean = 0.0, double stdDev = 1.0)
     {
-        var mean=0.0;
-        var stdDev = 1.0;
         var results = new double[num];
         for (var i = 0; i < num; i++)
         {

@@ -4,6 +4,7 @@ namespace BNN;
 
 public class Layer
 {
+    private Lazy<Random> _rand = new();
     private readonly IActivationFunction _activationFunction;
     private readonly Neuron[] _neurons;
     
@@ -11,18 +12,24 @@ public class Layer
     {
         _activationFunction = activationFunction;
         var weightLimit = WeightScale(inputCount, neuronCount);
+        
+        // Xavier/Glorot Initializer
+        var biasDefaults = _rand.Value.Randn(neuronCount, 0.0, 1 / Math.Sqrt(neuronCount));
 
-        _neurons = Enumerable.Range(0, neuronCount)
-            .Select(_ => WeightFactory(inputCount, weightLimit))
-            .Select(weights => new Neuron(weights, 0.0, momentum))
-            .ToArray();
+        _neurons = new Neuron[neuronCount];
+        for (int i = 0; i < neuronCount; i++)
+        {
+            _neurons[i] = new Neuron(
+                WeightFactory(inputCount, weightLimit),
+                biasDefaults[i],
+                momentum);
+        }
     }
-
+    
     private double[] WeightFactory(int cnt,  double weightLimit)
     {
-        var rand = new Random();
         return Enumerable.Range(0, cnt)
-            .Select(_ => 0.1 * rand.NextDouble(-weightLimit, weightLimit))
+            .Select(_ => 0.1 * _rand.Value.NextDouble(-weightLimit, weightLimit))
             .ToArray();
     }
 

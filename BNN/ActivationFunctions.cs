@@ -49,7 +49,6 @@ public static class ActivationFunctions
 
     public class ReLuFunction : ActivationFunctionBase
     {
-        
         protected override double[] SquashImpl(double[] inputs)
         {
             return inputs.Select(input => Math.Max(0.0, input)).ToArray();
@@ -69,19 +68,23 @@ public static class ActivationFunctions
         //
         // Parameters:
         //   a: The slope parameter for the Leaky ReLU function.       
-        public LeakyReLuFunction(double a)
+        public LeakyReLuFunction(double a = 0.01)
         {
             _a = a;
         }
 
         protected override double[] SquashImpl(double[] inputs)
         {
-            return inputs.Select(input => Math.Max(0.0, input)).ToArray();
+            return inputs
+                .Select(input => Math.Max(0.0, input) + _a * Math.Min(0.0, input))
+                .ToArray();
         }
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-            return Inputs.Select((input, n) => errorWrtOutput[n] * ((input > 0) ? 1 : 0)).ToArray();
+            return Inputs
+                .Select((input, n) => errorWrtOutput[n] * ((input > 0) ? 1 : _a))
+                .ToArray();
         }
     }
 
@@ -130,17 +133,16 @@ public static class ActivationFunctions
                 .Select(i => i - maxInputValue)
                 .Select(Math.Exp)
                 .ToArray();
-            
+
             var sum = expValues.Sum();
-            return expValues.Select(v => v / sum).ToArray();            
+            return expValues.Select(v => v / sum).ToArray();
         }
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-            
-            Debug.Assert(errorWrtOutput.Length == Outputs.Length, 
+            Debug.Assert(errorWrtOutput.Length == Outputs.Length,
                 $"the length of the errors array ({errorWrtOutput.Length}) did not match the length of the output array ({Outputs.Length})");
-            
+
             var derivatives = new double[Outputs.Length];
 
             for (var i = 0; i < Outputs.Length; i++) // row
@@ -153,17 +155,15 @@ public static class ActivationFunctions
                         (i == j)
                             ? Outputs[i] * (1 - Outputs[i])
                             : -1.0 * Outputs[i] * Outputs[j];
-                    
+
                     result += pdij * errorWrtOutput[j];
                 }
 
                 derivatives[i] = result;
             }
 
- 
-            
+
             return derivatives;
         }
     }
-
 }

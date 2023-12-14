@@ -81,7 +81,7 @@ public class Network
         var predicted = inputsList.Last();
         inputsList.Remove(predicted);
 
-        Debug.Assert(predicted.Length == targets.Length);
+        Debug.Assert(predicted.Length == targets.Length, $"the length of the predicted vector {predicted.Length} does not match the length of the target vector {targets.Length}");
         
         // calculate the error using the loss function
         var aggregateError = _aggregateErrorFunction.Invoke(targets, predicted);
