@@ -1,4 +1,6 @@
 ﻿namespace BNN.Tests;
+using Plotly.NET;
+
 
 public class VerticalTest
 {
@@ -9,13 +11,13 @@ public class VerticalTest
         var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.01), 1.1)
+            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.01), 1.25)
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        var learningRate = new LearningRate(0.055, 5e-7);
+        var learningRate = new LearningRate(0.06 , 5e-5);
         List<double> errors = new();
         
         // train
@@ -54,9 +56,9 @@ public class VerticalTest
         ErrorGraph.Graph(errors);
 
         // test
-        var testSamples = 10;
+        var testSamples = 50;
         var testingInputs = DataGenerators.BuildVerticalDataSet( testSamples, 3);
-
+        var correct = 0.0;
         Shuffle(testingInputs);
         for (var i = 0; i < testSamples; i++)
         {
@@ -66,15 +68,17 @@ public class VerticalTest
                 testingInputs[s, 0],
                 testingInputs[s, 1]
             };
-            var expected = new[] { 0.0, 0.0, 0.0 };
-            expected[(int)testingInputs[s, 2]] = 1.0;
+            // var expected = new[] { 0.0, 0.0, 0.0 };
+            // expected[(int)testingInputs[s, 2]] = 1.0;
 
             var predicted = network.Apply(inputs);
-            var loss = LossFunctions.CategoricalCrossEntropy(expected, predicted);
-            Console.WriteLine($"test: {DisplayArray(inputs)}\t predicted {DisplayArray(predicted)}\t expected {DisplayArray(expected)}\t loss:{loss}");
+            if ( Math.Abs(ArrayUtils.ArgMax(predicted) - testingInputs[s,2]) < 0.0001) correct++;
+  //          var loss = LossFunctions.CategoricalCrossEntropy(expected, predicted);
+//            Console.WriteLine($"test: {DisplayArray(inputs)}\t predicted {DisplayArray(predicted)}\t expected {DisplayArray(expected)}\t loss:{loss}");
         }
-        
-        
+
+        Console.WriteLine($"Accuracy: {correct / testSamples}");
+
     }
 
     static string DisplayArray(double[] arr)
