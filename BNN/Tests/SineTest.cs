@@ -1,4 +1,6 @@
-﻿namespace BNN.Tests;
+﻿using Plotly.NET;
+
+namespace BNN.Tests;
 
 public class SineTest
 {
@@ -48,6 +50,7 @@ public class SineTest
         var correct = 0.0;
         sampleCount = 100;
         var testingInputs = DataGenerators.BuildSineData(sampleCount);
+        List<Tuple<double, double>> predictedList = new();
         // ArrayUtils.Shuffle(testingInputs);
         for (var i = 0; i < sampleCount; i++)
         {
@@ -55,8 +58,26 @@ public class SineTest
             var predicted = network.Apply(inputs);
             if (Math.Abs(predicted[0] - testingInputs[i, 1]) < 0.0001) correct++;
             Console.WriteLine($"predicted: {predicted[0]} actual: {testingInputs[i, 1]}");
+            predictedList.Add(new Tuple<double, double>(testingInputs[i, 0], predicted[0]));
         }
 
         Console.WriteLine($"Accuracy: {correct / sampleCount}");
+        
+        // graph test vs predicted
+        var series0 = Enumerable.Range(0, data.GetLength(0))
+         .Select(index => new Tuple<double,double>(testingInputs[index, 0], testingInputs[index, 1]))
+         .ToArray();
+        
+        var charts = new[]
+        {
+         Chart2D.Chart.Scatter<double, double, string>(
+          xy: series0, mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("black")
+         ),
+         Chart2D.Chart.Scatter<double, double, string>(
+             xy: predictedList, mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("red")
+         ),
+        };
+        Chart.Combine(charts).Show();
+
     }
 }

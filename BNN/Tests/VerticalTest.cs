@@ -11,7 +11,7 @@ public class VerticalTest
         var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
-            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.01), 1.25)
+            .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.02), 0.9)
             .WithLayer(3, new ActivationFunctions.SoftmaxFunction())
             .WithGradientLossFunction(LossFunctions.CategoricalCrossEntropyDerivative)
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
@@ -24,7 +24,7 @@ public class VerticalTest
         var err = 0.0;
         for (var e = 0; e < 10001; e++)
         {
-            Shuffle(trainingInputs);
+            // Shuffle(trainingInputs);
 
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
