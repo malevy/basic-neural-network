@@ -6,6 +6,7 @@ public interface IActivationFunction
 {
     double[] Squash(double[] inputs);
     double[] BackProp(double[] errorWrtOutput);
+    double[] WeightInitializers(int inputCount, int outputCount);
 }
 
 public static class ActivationFunctions
@@ -26,6 +27,20 @@ public static class ActivationFunctions
 
         protected abstract double[] SquashImpl(double[] inputs);
         public abstract double[] BackProp(double[] errorWrtOutput);
+
+        /**
+        * Normalized Glorot Uniform Initializer
+        * Glorot & Bengio, AISTATS 2010
+        * http://jmlr.org/proceedings/papers/v9/glorot10a/glorot10a.pdf
+        */
+        public virtual double[] WeightInitializers(int inputCount, int outputCount)
+        {
+            var rand = new Random();
+            double limit = Math.Sqrt(6.0 / (inputCount + outputCount));
+            return Enumerable.Range(0, inputCount)
+                .Select(_ => 0.1 * rand.NextDouble(-limit, limit))
+                .ToArray();
+        }
     }
 
     public class LinearFunction : ActivationFunctionBase
@@ -58,6 +73,15 @@ public static class ActivationFunctions
         {
             return Inputs.Select((input, n) => errorWrtOutput[n] * ((input > 0) ? 1 : 0)).ToArray();
         }
+
+        public override double[] WeightInitializers(int inputCount, int outputCount)
+        {
+            var rand = new Random();
+            var std = Math.Sqrt(2.0 / inputCount);
+            return Enumerable.Range(0, inputCount)
+                .Select(_ => std * rand.NextDouble())
+                .ToArray();
+        }
     }
 
     public class LeakyReLuFunction : ActivationFunctionBase
@@ -84,6 +108,15 @@ public static class ActivationFunctions
         {
             return Inputs
                 .Select((input, n) => errorWrtOutput[n] * ((input > 0) ? 1 : _a))
+                .ToArray();
+        }
+
+        public override double[] WeightInitializers(int inputCount, int outputCount)
+        {
+            var rand = new Random();
+            var std = Math.Sqrt(2.0 / inputCount);
+            return Enumerable.Range(0, inputCount)
+                .Select(_ => std * rand.NextDouble())
                 .ToArray();
         }
     }

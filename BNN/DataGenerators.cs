@@ -79,8 +79,8 @@ Chart.Combine(charts).Show();
         var inc = 1.0 / numberOfSamples;
         for (int i = 0; i < numberOfSamples; i++)
         {
-            samples[i,0] = x; // x
-            samples[i,1] = Math.Sin(2 * Math.PI * x); // y
+            samples[i,0] = x * 2 * Math.PI; // x
+            samples[i,1] = Math.Sin(samples[i,0]); // y
             x += inc;
         }
 

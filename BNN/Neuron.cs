@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace BNN;
 
@@ -18,22 +19,10 @@ public class Neuron
         _perWeightMomentums = new double[_weights.Length];
     }
     
-    public double[] Weights
-    {
-        get
-        {
-            return _weights;
-        }
-    }
-    
-    public double Bias
-    {
-        get
-        {
-            return _bias;
-        }
-    }
-    
+    public double[] Weights => _weights;
+
+    public double Bias => _bias;
+
     public double Apply(double[] inputs)
     {
         return inputs
@@ -68,11 +57,35 @@ public class Neuron
             _perWeightMomentums[i] = weightDelta;
 
             newWeights[i] = _weights[i] + weightDelta;
+            if (Double.IsNaN(newWeights[i]))
+            {
+                Debugger.Break();
+                
+                var sb = new StringBuilder();
+                sb.AppendLine("neuron:" + i);
+                sb.AppendLine("input:" + inputs[i]);
+                sb.AppendLine("weight:" + _weights[i]);
+                sb.AppendLine("newWeight:" + newWeights[i]);
+                sb.AppendLine("weightDelta:" + weightDelta);
+                sb.AppendLine("pd_error_wrt_w_at_i:" + pd_error_wrt_w_at_i);
+                sb.AppendLine("errorWrtNet:" + errorWrtNet);
+                sb.AppendLine("learningRate:" + learningRate);
+                sb.AppendLine("perWeightMomentums:" + _perWeightMomentums[i]);
+                sb.AppendLine("momentum:" + _momentum);
+                sb.AppendLine("biasMomentum:" + _biasMomentum);
+                sb.AppendLine("bias:" + _bias);
+                    
+                throw new ApplicationException($"training failed. {sb}");
+            }
         }
 
         var biasDelta = _momentum * _biasMomentum - (learningRate * errorWrtNet);
         _biasMomentum = biasDelta;
         var newBias = _bias + biasDelta;
+        if (Double.IsNaN(newBias))
+        {
+            throw new ApplicationException($"training failed. bias:{_bias}, newBias:{newBias}, biasDelta:{biasDelta}");
+        }
 
         // activate the changes
         _weights = newWeights;

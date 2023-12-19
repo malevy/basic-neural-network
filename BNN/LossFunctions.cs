@@ -73,7 +73,7 @@ public static class LossFunctions
             .Zip(predicted)
             .Select(x => Math.Log(x.Second+NEAR_ZERO) * x.First)
             .Sum();
-
+        
         return loss;
     }
 

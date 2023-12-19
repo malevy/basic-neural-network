@@ -1,6 +1,6 @@
 ﻿namespace BNN.Tests;
-using Plotly.NET;
 
+using Plotly.NET;
 
 public class VerticalTest
 {
@@ -8,7 +8,7 @@ public class VerticalTest
     {
         var sampleCount = 200;
         var rand = new Random();
-        var trainingInputs = DataGenerators.BuildVerticalDataSet( sampleCount, 3);
+        var trainingInputs = DataGenerators.BuildVerticalDataSet(sampleCount, 3);
 
         var network = NetworkBuilder.WithInputs(2)
             .WithLayer(2, new ActivationFunctions.LeakyReLuFunction(0.02), 0.9)
@@ -17,9 +17,9 @@ public class VerticalTest
             .WithAggregateLossFunction(LossFunctions.CategoricalCrossEntropy)
             .Build();
 
-        var learningRate = new LearningRate(0.06 , 5e-5);
+        var learningRate = new LearningRate(0.06, 5e-5);
         List<double> errors = new();
-        
+
         // train
         var err = 0.0;
         for (var e = 0; e < 10001; e++)
@@ -28,8 +28,8 @@ public class VerticalTest
 
             for (var n = 0; n < trainingInputs.GetLength(0); n++)
             {
-                var expected = new[] { 0.0, 0.0, 0.0 };
-                expected[(int)trainingInputs[n, 2]] = 1.0;
+                var expected = new[] {0.0, 0.0, 0.0};
+                expected[(int) trainingInputs[n, 2]] = 1.0;
                 var inputs = new[]
                 {
                     trainingInputs[n, 0],
@@ -43,48 +43,87 @@ public class VerticalTest
                 Console.WriteLine($"epoch:{e} error:{err} lr:{learningRate.Value}");
                 errors.Add(err);
             }
-            // if (err < 0.001)
-            // {
-            //     Console.WriteLine($"training stopped after {e}; error={err}");
-            //     break;
-            // }
-            learningRate.Decay();
 
+            learningRate.Decay();
         }
+
         Console.WriteLine($"last error:{err}");
         errors.Add(err);
         ErrorGraph.Graph(errors);
 
         // test
         var testSamples = 50;
-        var testingInputs = DataGenerators.BuildVerticalDataSet( testSamples, 3);
+        var testingInputs = DataGenerators.BuildVerticalDataSet(testSamples, 3);
         var correct = 0.0;
-        Shuffle(testingInputs);
-        for (var i = 0; i < testSamples; i++)
+        Dictionary<int, List<Tuple<double, double>>> predictedLists = new()
         {
-            var s = rand.Next(10);
+            {0, new List<Tuple<double, double>>()},
+            {1, new List<Tuple<double, double>>()},
+            {2, new List<Tuple<double, double>>()}
+        };
+        Shuffle(testingInputs);
+        for (var i = 0; i < testingInputs.GetLength(0); i++)
+        {
             var inputs = new[]
             {
-                testingInputs[s, 0],
-                testingInputs[s, 1]
+                testingInputs[i, 0],
+                testingInputs[i, 1]
             };
-            // var expected = new[] { 0.0, 0.0, 0.0 };
-            // expected[(int)testingInputs[s, 2]] = 1.0;
 
             var predicted = network.Apply(inputs);
-            if ( Math.Abs(ArrayUtils.ArgMax(predicted) - testingInputs[s,2]) < 0.0001) correct++;
-  //          var loss = LossFunctions.CategoricalCrossEntropy(expected, predicted);
-//            Console.WriteLine($"test: {DisplayArray(inputs)}\t predicted {DisplayArray(predicted)}\t expected {DisplayArray(expected)}\t loss:{loss}");
+            if (Math.Abs(ArrayUtils.ArgMax(predicted) - testingInputs[i, 2]) < 0.0001) correct++;
+
+            predictedLists[ArrayUtils.ArgMax(predicted)]
+                .Add(new Tuple<double, double>(testingInputs[i, 0], testingInputs[i, 1]));
         }
 
-        Console.WriteLine($"Accuracy: {correct / testSamples}");
+        Console.WriteLine($"Accuracy: {correct / testingInputs.GetLength(0)}");
 
+
+        // plot the results
+        Dictionary<int, List<Tuple<double, double>>> actualLists = new()
+        {
+            {0, new List<Tuple<double, double>>()},
+            {1, new List<Tuple<double, double>>()},
+            {2, new List<Tuple<double, double>>()}
+        };
+
+        for (int i = 0; i < testingInputs.GetLength(0); i++)
+        {
+            var point = new Tuple<double, double>(testingInputs[i, 0], testingInputs[i, 1]);
+            actualLists[(int) testingInputs[i, 2]].Add(point);
+        }
+
+        var charts = new[]
+        {
+            Chart2D.Chart.Scatter<double, double, string>(Name: "actual class 0",
+                xy: actualLists[0], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("red"),
+                MarkerSymbol: StyleParam.MarkerSymbol.Diamond, Opacity: 0.3
+            ),
+            Chart2D.Chart.Scatter<double, double, string>(Name: "actual class 1",
+                xy: actualLists[1], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("green"),
+                MarkerSymbol: StyleParam.MarkerSymbol.Diamond, Opacity: 0.3
+            ),
+            Chart2D.Chart.Scatter<double, double, string>(Name: "actual class 2",
+                xy: actualLists[2], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("blue"),
+                MarkerSymbol: StyleParam.MarkerSymbol.Diamond, Opacity: 0.3
+            ),
+            Chart2D.Chart.Scatter<double, double, string>(Name: "predicted class 0",
+                xy: predictedLists[0], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("red"),
+                MarkerSymbol: StyleParam.MarkerSymbol.CircleX
+            ),
+            Chart2D.Chart.Scatter<double, double, string>(Name: "predicted class 1",
+                xy: predictedLists[1], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("green"),
+                MarkerSymbol: StyleParam.MarkerSymbol.CircleX
+            ),
+            Chart2D.Chart.Scatter<double, double, string>(Name: "predicted class 2",
+                xy: predictedLists[2], mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("blue"),
+                MarkerSymbol: StyleParam.MarkerSymbol.CircleX
+            )
+        };
+        Chart.Combine(charts).Show();
     }
 
-    static string DisplayArray(double[] arr)
-    {
-        return "[" + string.Join(",", arr) + "]";
-    }
 
     static void Shuffle(double[,] data)
     {
@@ -101,5 +140,4 @@ public class VerticalTest
             n--;
         }
     }
-
 }
