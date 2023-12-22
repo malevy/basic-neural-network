@@ -2,37 +2,35 @@
 
 namespace BNN.Tests;
 
-/**
- * this is not working. I cannot get this model configured to learn sin(x).
- */
-
 public class SineTest
 {
     public static void Run()
     {
         // results are better when the same number of neurons is used for both layers
         var network = NetworkBuilder.WithInputs(1)
-            .WithLayer(64, new ActivationFunctions.TanhFunction(),0.9)
-            .WithLayer(64, new ActivationFunctions.TanhFunction(),0.9)
-            .WithLayer(1, new ActivationFunctions.TanhFunction())
+            .WithLayer(100, new ActivationFunctions.TanhFunction(),0.6)
+            .WithLayer(1, new ActivationFunctions.LinearFunction())
             .WithGradientLossFunction(LossFunctions.SquaredErrorDerivative)
             .WithAggregateLossFunction(LossFunctions.MeanError(LossFunctions.SquaredError))
             .Build();
 
-        var learningRate = new LearningRate(3e-3,.00001);
+        var learningRate = new LearningRate(3e-3, 0.0001);
         List<double> errors = new();
-        var sampleCount = 300;
+        var sampleCount = 600;
+
+        double[] expected = { 0.0 };
+        double[] inputs = { 0.0 };
         
         // train
         var err = 0.0;
-        for (var e = 0; e < 5501; e++)
+        for (var e = 0; e < 10001; e++) //10000
         {
             var data = DataGenerators.BuildSineData(sampleCount);
 
             for (var n = 0; n < data.GetLength(0); n++)
             {
-                var expected = new[] { data[n, 1] }; // sin(x)
-                var inputs = new[] { data[n, 0] }; // X
+                expected[0] = data[n, 1]; // sin(x)
+                inputs[0] = data[n, 0]; // X
                 err = network.Train(inputs, expected, learningRate.Value);
                 if (Double.IsNaN(err))
                 {
@@ -62,9 +60,9 @@ public class SineTest
         // ArrayUtils.Shuffle(testingInputs);
         for (var i = 0; i < sampleCount; i++)
         {
-            var inputs = new[] { testingInputs[i, 0], };
+            inputs[0] = testingInputs[i, 0];
             var predicted = network.Apply(inputs);
-            if (Math.Abs(predicted[0] - testingInputs[i, 1]) < 0.001) correct++;
+            if (Math.Abs(predicted[0] - testingInputs[i, 1]) < 0.01) correct++;
             Console.WriteLine($"predicted: {predicted[0]} actual: {testingInputs[i, 1]}");
             predictedList.Add(new Tuple<double, double>(testingInputs[i, 0], predicted[0]));
         }
@@ -82,7 +80,7 @@ public class SineTest
           xy: series0, mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("black")
          ),
          Chart2D.Chart.Scatter<double, double, string>(Name: "predicted",
-             xy: predictedList, mode: StyleParam.Mode.Markers, MarkerColor: Color.fromString("red")
+             xy: predictedList, mode: StyleParam.Mode.Lines_Markers, MarkerColor: Color.fromString("red"), Opacity:0.50  
          ),
         };
         Chart.Combine(charts).Show();

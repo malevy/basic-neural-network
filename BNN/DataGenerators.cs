@@ -72,18 +72,22 @@ Chart.Combine(charts).Show();
      */
     public static double[,] BuildSineData(int numberOfSamples)
     {
-        double[,] samples = new double[numberOfSamples,2];
-
         var rand = new Random();
-        var x = 0.0;
-        var inc = 1.0 / numberOfSamples;
-        for (int i = 0; i < numberOfSamples; i++)
-        {
-            samples[i,0] = x * 2 * Math.PI; // x
-            samples[i,1] = Math.Sin(samples[i,0]); // y
-            x += inc;
-        }
 
+        var x = new double[numberOfSamples];
+        for (var j = 0; j < numberOfSamples; j++)
+        {
+            x[j] = rand.NextDouble();
+        }
+        Array.Sort(x);
+        
+        var samples = new double[numberOfSamples,2];
+        for(var i=0; i<numberOfSamples; i++)
+        {
+            samples[i,0] = x[i]; // x
+            samples[i,1] = Math.Sin(samples[i,0] * 2 * Math.PI); // y
+        }
+        
         return samples;
     }
 

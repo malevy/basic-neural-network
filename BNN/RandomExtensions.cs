@@ -18,9 +18,7 @@ public static class RandomExtensions
     }
 
     /**
-     * Return 'num' random number between 0 (inclusive) and
-     * 1 (exclusive) with a normal distribution of mean=0
-     * and variance=1.
+     * Return 'num' random numbers with a normal distribution for the given mean and variance.
      *
      * this method simulates Numpy's "random.randn" function
      * with one dimension
