@@ -12,4 +12,15 @@
       <PackageReference Include="Plotly.NET.CSharp" Version="0.11.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="Tests\Content\test-scrubbed.csv" />
+      <EmbeddedResource Include="Tests\Content\test-scrubbed.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+      <None Remove="Tests\Content\train-scrubbed.csv" />
+      <EmbeddedResource Include="Tests\Content\train-scrubbed.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
