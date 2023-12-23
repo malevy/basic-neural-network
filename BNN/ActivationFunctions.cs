@@ -121,6 +121,9 @@ public static class ActivationFunctions
         }
     }
 
+    /**
+     * Sigmoid is a good activation function for binary classification
+     */
     public class SigmoidFunction : ActivationFunctionBase
     {
         private readonly Func<double, double> _sigmoid = (x) => 1.0 / (1.0 + Math.Exp(-x));
@@ -132,9 +135,10 @@ public static class ActivationFunctions
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-            return Inputs
-                .Select(input => _sigmoid(input) * (1 - _sigmoid(input)))
-                .Select((d, n) => errorWrtOutput[n] * d)
+            return Outputs
+                .Select(u => (1.0 - u) * u)
+                .Zip(errorWrtOutput)
+                .Select(p => p.First * p.Second)
                 .ToArray();
         }
     }
