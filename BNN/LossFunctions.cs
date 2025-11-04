@@ -81,7 +81,6 @@ public static class LossFunctions
         return predicted
             .Zip(target)
             .Select(x => (-1.0 * x.Second) / (x.First + NEAR_ZERO))
-            .Select(x => x / predicted.Length)
             .ToArray();
     }
 

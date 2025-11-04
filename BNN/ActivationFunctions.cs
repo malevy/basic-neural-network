@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace BNN;
 
@@ -153,7 +155,7 @@ public static class ActivationFunctions
 
         public override double[] BackProp(double[] errorWrtOutput)
         {
-            return Outputs.Select(output => 1.0 - Math.Pow(Math.Tanh(output), 2))
+            return Outputs.Select(output => 1.0 - Math.Pow(output, 2))
                 .Select((d, n) => errorWrtOutput[n] * d)
                 .ToArray();
         }

@@ -23,7 +23,7 @@ public class SineTest
         
         // train
         var err = 0.0;
-        for (var e = 0; e < 10001; e++) //10000
+        for (var e = 0; e < 2001; e++) //1000
         {
             var data = DataGenerators.BuildSineData(sampleCount);
 
@@ -53,7 +53,10 @@ public class SineTest
         ErrorGraph.Graph(errors);
 
         // test
-        var correct = 0.0;
+        var correct001 = 0.0;
+        var correct005 = 0.0;
+        var correct01 = 0.0;
+        var correct05 = 0.0;
         sampleCount = 100;
         var testingInputs = DataGenerators.BuildSineData(sampleCount);
         List<Tuple<double, double>> predictedList = new();
@@ -62,12 +65,19 @@ public class SineTest
         {
             inputs[0] = testingInputs[i, 0];
             var predicted = network.Apply(inputs);
-            if (Math.Abs(predicted[0] - testingInputs[i, 1]) < 0.01) correct++;
-            Console.WriteLine($"predicted: {predicted[0]} actual: {testingInputs[i, 1]}");
+            var diff = Math.Abs(predicted[0] - testingInputs[i, 1]);
+            if (diff < 0.01) correct001++;
+            if (diff < 0.05) correct005++;
+            if (diff < 0.1) correct01++;
+            if (diff < 0.5) correct05++;
+            // Console.WriteLine($"predicted: {predicted[0]} actual: {testingInputs[i, 1]}");
             predictedList.Add(new Tuple<double, double>(testingInputs[i, 0], predicted[0]));
         }
 
-        Console.WriteLine($"Accuracy: {(correct / sampleCount):F5} {correct} out of {sampleCount} ");
+        Console.WriteLine($"Accuracy @ 0.01: {(correct001 / sampleCount):F2} ({correct001}/{sampleCount})");
+        Console.WriteLine($"Accuracy @ 0.05: {(correct005 / sampleCount):F2} ({correct005}/{sampleCount})");
+        Console.WriteLine($"Accuracy @ 0.10: {(correct01 / sampleCount):F2} ({correct01}/{sampleCount})");
+        Console.WriteLine($"Accuracy @ 0.50: {(correct05 / sampleCount):F2} ({correct05}/{sampleCount})");
         
         // graph test vs predicted
         var series0 = Enumerable.Range(0, testingInputs.GetLength(0))

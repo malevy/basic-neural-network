@@ -52,7 +52,7 @@ public class Neuron
         for (int i = 0; i < _weights.Length; i++)
         {
             var pd_error_wrt_w_at_i = errorWrtNet * inputs[i];
-            errorToPropagate[i] = pd_error_wrt_w_at_i;
+            errorToPropagate[i] = errorWrtNet * _weights[i];
             var weightDelta = _momentum * _perWeightMomentums[i] - (learningRate * pd_error_wrt_w_at_i);
             _perWeightMomentums[i] = weightDelta;
 
