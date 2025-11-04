@@ -106,17 +106,18 @@ public class TitanicTest
             try
             {
                 var values = parser.ReadFields();
-                    
+                if (values == null) continue;
+
                 // skip the lines with one or more infinity or negative infinaty
                 if (values.Any(v => v.Contains("inf"))) continue;
-                    
+
                 data.Add(values.Select(x => Double.Parse(x)).ToArray());
             }
             catch (MalformedLineException ex)
             {
                 Console.WriteLine($"skipping line {ex.LineNumber}");
             }
-            catch (FormatException fe)
+            catch (FormatException)
             {
                 Console.WriteLine($"cannot convert value to double on line {parser.LineNumber}");
             }

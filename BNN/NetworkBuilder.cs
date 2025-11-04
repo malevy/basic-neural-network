@@ -13,8 +13,8 @@ public class NetworkBuilder
     
     private readonly int _inputs;
     private readonly IList<LayerDesign> _layersDesigns = new List<LayerDesign>();
-    private Func<double[], double[], double> _aggregateErrorFunction;
-    private Func<double[], double[], double[]> _gradientErrorFunction;
+    private Func<double[], double[], double> _aggregateErrorFunction = null!;
+    private Func<double[], double[], double[]> _gradientErrorFunction = null!;
 
 
     private NetworkBuilder(int inputs)

@@ -16,7 +16,6 @@ public class SingleNeuron
         var trainingInput = new [] {new[] {0.0, 0.0, 1.0}, new[] {1.0, 1.0, 1.0}, new[] {1.0, 0.0, 1.0}, new[] {0.0, 1.0, 1.0}};
         var trainingExpected = new[] {0.0, 1.0, 1.0, 1.0};
         var testInput = new[] {1.0, 0.0, 0.0};
-        var testExpected = 1.0;
 
         Console.WriteLine(network.Dump());
         var averageError=0.0;
